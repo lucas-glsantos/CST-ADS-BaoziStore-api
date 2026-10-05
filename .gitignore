@@ -1,0 +1,98 @@
+HELP.md
+target/
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+application.properties
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+# Build artefacts (Maven)
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+
+# Maven/Gradle wrapper scripts (regerados)
+mvnw
+mvnw.cmd
+gradlew
+gradlew.bat
+
+
+# IDE / editor settings
+.idea/
+*.iml
+.vscode/
+*.project
+*.classpath
+.settings/
+*.sw?
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+.idea
+*.iws
+*.iml
+*.ipr
+
+
+
+# Configurações sensíveis da aplicação
+src/main/resources/application-*.properties
+src/main/resources/application-*.yml
+src/main/resources/*.secret
+
+
+# 5. Variáveis de ambiente locais
+.env
+.env.*
+
+
+# Keystores / certificados (chaves privadas)
+*.jks
+*.p12
+*.pem
+*.crt
+*.key
+
+
+# Logs e arquivos temporários
+*.log
+logs/
+tmp/
+*.tmp
+
+
+# Maven/Gradle caches
+.m2/
+.gradle/
+
+
+# Docker / k8s arquivos contendo segredos
+docker-compose.override.yml
+k8s/**/secret-*.yaml
+
+
+# Arquivos de backup
+*~
+*.bak
+*.swp
+
+
+# Outros artefatos de teste ou integração local
+src/test/resources/**/secrets/**
