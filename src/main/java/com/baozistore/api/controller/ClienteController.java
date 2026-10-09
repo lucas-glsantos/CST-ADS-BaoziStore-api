@@ -1,6 +1,7 @@
 package com.baozistore.api.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -8,6 +9,8 @@ import com.baozistore.api.model.Cliente;
 import com.baozistore.api.repository.ClienteRepository;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/clientes")
@@ -32,35 +35,61 @@ public class ClienteController {
 
     // READ: Buscar um Cliente específico pelo ID
     @GetMapping("/{id}")
-    public ResponseEntity<Cliente> buscarPorId(@PathVariable Long id) {
-        return repository.findById(id)
-            .map(cliente -> ResponseEntity.ok().body(cliente))
-            .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Object> buscarPorId(@PathVariable Long id) {
+        Optional<Cliente> clienteOptional = repository.findById(id);
+
+        // Valida se o ID existe
+        if (clienteOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", "Cliente não encontrado"));
+        }
+
+        // Se ID existe, extrai o objeto e retorna o ID do Cliente
+        Cliente cliente = clienteOptional.get();
+        return ResponseEntity.ok(cliente);
     }
 
     // UPDATE: Atualizar dados de um Cliente Existente
     @PutMapping("/{id}")
-    public ResponseEntity<Cliente> atualizar(@PathVariable Long id, @RequestBody Cliente clienteAtualizado) {
-        return repository.findById(id)
-            .map(clienteExistente -> {
-                clienteExistente.setNome(clienteAtualizado.getNome());
-                clienteExistente.setEmail(clienteAtualizado.getEmail());
-                clienteExistente.setTelefone(clienteAtualizado.getTelefone());
+    public ResponseEntity<Object> atualizar(@PathVariable Long id, @RequestBody(required = false) Cliente clienteAtualizado) {
+        Optional<Cliente> clienteOptional = repository.findById(id);
 
-                Cliente atualizado = repository.save(clienteExistente);
+        // Valida se o ID existe
+        if (clienteOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", "Cliente não encontrado"));
+        }
 
-                return ResponseEntity.ok().body(atualizado);
-            }).orElse(ResponseEntity.notFound().build());
+        // Valida se o body veio vazio
+        if (clienteAtualizado == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("error", "Cliente não atualizado. Dados não enviados no corpo da requisição"));
+        }
+
+        // Se ID existe e o body Enviado com Sucesso, prossegue com a Atualização
+        Cliente clienteExistente = clienteOptional.get();
+        clienteExistente.setNome(clienteAtualizado.getNome());
+
+        Cliente atualizado = repository.save(clienteExistente);
+        return ResponseEntity.ok(Map.of(
+            "success", "Cliente atualizado",
+            "cliente", atualizado
+        ));
     }
 
     // DELETE: Remover um CLiente
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
-        return repository.findById(id)
-            .map(clienteExistente -> {
-                repository.delete(clienteExistente);
+    public ResponseEntity<Object> deletar(@PathVariable Long id) {
 
-                return ResponseEntity.ok().<Void>build();
-            }).orElse(ResponseEntity.notFound().build());
+        // Valida se o ID existe
+        if (!repository.existsById(id)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", "Cliente não encontrado"));
+        }
+
+        // Se o ID existe, executa exclusão diretamente
+        repository.deleteById(id);
+
+        return ResponseEntity.ok(Map.of("success", "Cliente deletado com sucesso"));
     }
 }
