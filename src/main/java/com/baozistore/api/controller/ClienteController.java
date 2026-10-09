@@ -1,16 +1,13 @@
 package com.baozistore.api.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import com.baozistore.api.model.Cliente;
 import com.baozistore.api.repository.ClienteRepository;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/clientes")
@@ -29,8 +26,23 @@ public class ClienteController {
 
     // READ: Listar Todos os Clientes
     @GetMapping
-    public List<Cliente> listarTodos() {
-        return repository.findAll();
+    public ResponseEntity<Object> listarTodos() {
+
+        List<Cliente> clientes = repository.findAll();
+
+        // Validação com Early Return Se a lista estiver vazia
+        if (clientes.isEmpty()) {
+            // Nota: Em APIs REST estritas, uma lista vazia geralmente retorna 200 OK com [].
+            // Porém, para exibir a mensagem solicitada, usamos 404 (ou 200, dependendo da sua regra de negócio).
+            return ResponseEntity.status(HttpStatus.OK)
+                .body(Map.of("message", "Nenhum cliente encontrado"));
+        }
+
+        // Se existirem clientes, cria a mensagem dinâmica com a quantidade
+        return ResponseEntity.ok(Map.of(
+            "clientes", clientes,
+            "message", clientes.size() + " Clientes Listados"
+        ));
     }
 
     // READ: Buscar um Cliente específico pelo ID
