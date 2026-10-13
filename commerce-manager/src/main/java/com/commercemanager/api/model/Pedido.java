@@ -7,17 +7,13 @@ import jakarta.persistence.*;
 
 public class Pedido {
 
-    @Id
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;
 
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @ManyToOne(optional = false) @JoinColumn(name = "clienteId") private Cliente clienteId;
 
-    private Long id;
+    @ManyToOne(optional = false) @JoinColumn(name = "produtoId") private Produto produtoId;
 
-    @Column(name = "clienteId") private Long clienteId;
-
-    @Column(name = "produtoId") private Long produtoId;
-
-    @Column(name = "quantidade") private Integer quantidade;
+    @JoinColumn(name = "quantidade") private Integer quantidade;
 
     public Pedido() {
         // Construtor Vazio
@@ -32,19 +28,19 @@ public class Pedido {
         this.id = id;
     }
 
-    public Long getClienteId() {
+    public Cliente getClienteId() {
         return clienteId;
     }
 
-    public void setClienteId(Long clientId) {
+    public void setClienteId(Cliente clientId) {
         this.clienteId = clientId;
     }
 
-    public Long getProdutoId() {
+    public Produto getProdutoId() {
         return produtoId;
     }
 
-    public void setProdutoId(Long produtoId) {
+    public void setProdutoId(Produto produtoId) {
         this.produtoId = produtoId;
     }
 

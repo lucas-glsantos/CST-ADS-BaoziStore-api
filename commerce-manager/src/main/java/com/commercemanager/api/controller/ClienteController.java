@@ -1,6 +1,5 @@
 package com.commercemanager.api.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,15 +12,17 @@ import java.util.*;
 @RequestMapping("/api/clientes")
 
 public class ClienteController {
+    private final ClienteRepository repository;
 
-    @Autowired
-
-    private ClienteRepository repository;
+    public ClienteController(ClienteRepository repository) {
+        this.repository = repository;
+    }
 
     // CREATE: Salvar um Novo Cliente
     @PostMapping
-    public Cliente criar(@RequestBody Cliente cliente) {
-        return repository.save(cliente);
+    public ResponseEntity<Cliente> criar(@RequestBody Cliente cliente) {
+        var salvo = repository.save(cliente);
+        return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
     }
 
     // READ: Listar Todos os Clientes

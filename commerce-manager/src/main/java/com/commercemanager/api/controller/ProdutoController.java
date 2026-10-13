@@ -1,6 +1,5 @@
 package com.commercemanager.api.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,15 +12,17 @@ import java.util.*;
 @RequestMapping("/api/produtos")
 
 public class ProdutoController {
+    private final ProdutoRepository repository;
 
-    @Autowired
-
-    private ProdutoRepository repository;
+    public ProdutoController(ProdutoRepository repository) {
+        this.repository = repository;
+    }
 
     // CREATE: Salvar um Novo Produto
     @PostMapping
-    public Produto criar(@RequestBody Produto produto) {
-        return repository.save(produto);
+    public ResponseEntity<Produto> criar(@RequestBody Produto produto) {
+        Produto salvo = repository.save(produto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
     }
 
     // READ: Listar Todos os Produtos
